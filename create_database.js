@@ -16,9 +16,40 @@ let db = new sqlite3.Database('./db/flowers2019.db', (err) => {
   else { console.log('Connected to the database!'); }
 });
 
-db.each("SELECT * FROM Flowers", (err, row) => {
-  console.log(row.GENUS + " - " + row.SPECIES + ' - ' + row.COMNAME);
+
+db.each("SELECT COMNAME FROM Flowers", (err, row) => {
+  console.log(row.COMNAME);
 });
+
+
+//<-----          Get the most 10 recent sighting of the flower
+/*
+var selectedFlowerComname = '\'California flannelbush\'';
+const orderStatement = ' ORDER BY SIGHTED';
+var counter = 0;
+db.each(
+    ("SELECT * FROM SIGHTINGS WHERE name == "+selectedFlowerComname + orderStatement), (err, row) => {
+  //console.log(row.SIGHTED);
+  if(counter <= 9) { 
+    console.log(row.SIGHTED+' - '+ row.LOCATION +' - ' + row.PERSON);
+    counter++;
+  }
+});
+*/
+
+//<-----          UPDATE FLOWER 
+/*
+var selectedFlower = { COMNAME:'Lovage', GENUS: 'TEST', SPECIES:'TEST2' }
+db.run(('UPDATE FLOWERS SET GENUS=\''+selectedFlower.GENUS+'\', SPECIES=\''+
+        selectedFlower.SPECIES+'\' WHERE COMNAME==\''+selectedFlower.COMNAME+'\';'));
+*/
+
+//<-----          INSERT SIGHTING, CHECK WHEN NO COMNAME IS IN THE FLOWERS TABLE
+/*
+var newSighting = { NAME:'Lovage', PERSON: 'X', LOCATION:'LOC', SIGHTED:'2019-01-01'}
+db.run(('INSERT INTO SIGHTINGS (NAME, PERSON, LOCATION, SIGHTED) VALUES(\''
+        +newSighting.NAME+'\',\''+newSighting.PERSON+'\',\''+newSighting.LOCATION+'\',\''+newSighting.SIGHTED+'\');'));
+*/
 
 /*
 // run each database statement *serially* one after another
