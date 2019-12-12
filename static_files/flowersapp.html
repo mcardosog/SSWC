@@ -60,7 +60,7 @@
           cardSelectFlower(data);
         },
       });
-      $.ajax({
+      $.ajax({                                    //<----------- IMPLEMENT
         url: 'topTenFlowers/'+comname,
         type: 'GET',
         success: (data) => {
@@ -95,7 +95,16 @@
       });
     }
 
-
+    function insertNewFlower(comname, genus, species) {
+      const url = 'insert/'+comname+'/'+genus+'/'+species;
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: () => {
+          window.alert("Flower Updated!")
+        },
+      });
+    }
 
     function insertSight (name, person, location, sighted) {
       const url = 'insert/'+name+'/'+person+'/'+location+'/'+sighted;
@@ -113,6 +122,14 @@
       const genus = $('#modifyGenus').val();
       const species = $('#modifySpecies').val();
       updateCurrentFlower(comname,genus,species);
+    });
+
+    $('#btnInsertFlower').click(()=>{
+      const comname = $('#newComname').val();
+      const genus = $('#newGenus').val();
+      const species = $('#newSpecies').val();
+      insertNewFlower(comname,genus,species);
+      loadAllFlowers();
     });
 
     $('#readButton').click(() => {
@@ -216,7 +233,7 @@
                   <label >Species</label>
                   <input class="form-control" id="newSpecies">
                 </div>
-                <button type="submit" class="btn btn-primary">Insert</button>
+                <button type="submit" class="btn btn-primary" id="btnInsertFlower">Insert</button>
               </form>
           </div>
         </div>
