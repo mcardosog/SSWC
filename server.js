@@ -36,23 +36,25 @@ app.get('/topTenFlowers/:comname', (req, res) => {
 });
 
 //UPDATE FLOWER
-app.set('/update/:comname/:genus/:species', (req, res) => {
+app.get('/update/:comname/:genus/:species', (req, res) => {
   const comname = '\''+req.params.comname+'\'';
   const genus = '\''+req.params.genus+'\'';
   const species = '\''+req.params.species+'\'';
   const query = 'UPDATE FLOWERS SET GENUS='+genus+", SPECIES="+species+
-                'WHERE COMNAME=='+comname+';';
+                ' WHERE COMNAME=='+comname+';';
+  console.log(query);
   db.run(query);
 });
 
 //INSERT FLOWER
-app.set('/insert/:name/:person/:location/:sighted', (req, res) => {
+app.get('/insert/:name/:person/:location/:sighted', (req, res) => {
   const name = '\''+req.params.name+'\'';
   const person = '\''+req.params.person+'\'';
   const location = '\''+req.params.location+'\'';
   const sighted = '\''+req.params.sighted+'\'';
   const query = 'INSERT INTO SIGHTINGS (NAME, PERSON, LOCATION, SIGHTED)'+ 
-                'VALUES('+name+','+person+','+location+','+sighted+');';
+                ' VALUES('+name+','+person+','+location+','+sighted+');';
+  console.log(query);
   db.run(query);
 });
 

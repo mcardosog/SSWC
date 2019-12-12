@@ -1,110 +1,93 @@
+<!--
+
+Web frontend for petsapp
+
+COGS121 by Philip Guo
+https://github.com/pgbovine/COGS121
+
+Start ../server.js and then visit this URL to view this webpage:
+
+http://localhost:3000/petsapp.html
+
+-->
+
 <html>
-  <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="flowersapp.css">
-    <title>Flowers App</title>
-    <script src="jquery-3.3.1.min.js"></script>
-    <script type="text/javascript">
-      // jQuery convention for running when the document has been fully loaded:
+<head>
+<title>PetsApp</title>
 
-      $(document).ready(() => {
-        //Call all elements in the DB when the page is loaded
-        $(document).ready(function(){
-          //f();
-          /*
-          $.ajax({ 
-            url: "loadAllFlowers",
-            type: 'GET',
-            dataType : 'json',
-            success:(data) => {
-              console.log(data);
-            }});
-            */
-        });
+<script src="jquery-3.3.1.min.js"></script>
 
-        function f () {
-            console.log('CCCC');
+<script type="text/javascript">
+
+// jQuery convention for running when the document has been fully loaded:
+$(document).ready(() => {
+  $('#readButton').click(() => {
+    const requestURL = 'users/' + $('#nameBox').val();
+    console.log('making ajax request to:', requestURL);
+
+    // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
+    // Using the core $.ajax() method since it's the most flexible.
+    // ($.get() and $.getJSON() are nicer convenience functions)
+    $.ajax({
+      // all URLs are relative to http://localhost:3000/
+      url: requestURL,
+      type: 'GET',
+      dataType : 'json', // this URL returns data in JSON format
+      success: (data) => {
+        console.log('You received some data!', data);
+
+        if (data.job && data.pet) {
+          $('#status').html('Successfully fetched data at URL: ' + requestURL);
+          $('#jobDiv').html('My job is ' + data.job);
+          $('#petImage').attr('src', data.pet).attr('width', '300px');
+        } else {
+          $('#status').html('Error: could not find user at URL: ' + requestURL);
+          // clear the display
+          $('#jobDiv').html('');
+          $('#petImage').attr('src', '').attr('width', '0px');
         }
+      },
+    });
+  });
 
-        $('#readButton').click(() => {
-          const requestURL = 'users/' + $('#nameBox').val();
-          console.log('making ajax request to:', requestURL);
+  $('#allUsersButton').click(() => {
+    $.ajax({
+      url: 'insert/Mata/Pepe/Cuba/2019-02-02',
+      type: 'GET',
+      success: () => {
+        window.alert("Done!")
+      },
+    });
+  });
 
-          // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
-          // Using the core $.ajax() method since it's the most flexible.
-          // ($.get() and $.getJSON() are nicer convenience functions)
-          $.ajax({
-            // all URLs are relative to http://localhost:3000/
-            url: requestURL,
-            type: 'GET',
-            dataType : 'json', // this URL returns data in JSON format
-            success: (data) => {
-              console.log('You received some data!', data);
+  // define a generic Ajax error handler:
+  // http://api.jquery.com/ajaxerror/
+  $(document).ajaxError(() => {
+    $('#status').html('Error: unknown ajaxError!');
+  });
+});
+</script>
 
-              if (data.job && data.pet) {
-                $('#status').html('Successfully fetched data at URL: ' + requestURL);
-                $('#jobDiv').html('My job is ' + data.job);
-                $('#petImage').attr('src', data.pet).attr('width', '300px');
-              } else {
-                $('#status').html('Error: could not find user at URL: ' + requestURL);
-                // clear the display
-                $('#jobDiv').html('');
-                $('#petImage').attr('src', '').attr('width', '0px');
-              }
-            },
-          });
-        });
+</head>
+<body>
+  <h1>Welcome to PetsApp!</h1>
 
-        $('#allUsersButton').click(() => {
-          console.log("DDD");
-            for(var i = 0; i < 10; i++) {
-              var v = document.createElement('button');
-              $('#mainTable').append(v)
-            }
-        });
+  Name: <input id="nameBox" type="text" size="20"/>
+  <button id="readButton">Get profile</button>
+  <button id="allUsersButton">Get all usernames</button>
 
-        $('#test').click(()=>{
-          console.log("XXX");
-          $.ajax({
-            url: 'loadAllFlowers',
-            type: 'GET',
-            dataType: 'json',
-            success:(data) =>{
-              console.log(data);
-            }
-          });
-        });
+  <div id="jobDiv"></div>
+  <img id="petImage"></img>
 
-      });
-    </script>
-  </head>
-  <body>
-    <div class="header">
-        <h1 class="welcomeHeader" >Welcome to Flowers App!</h1>
-    </div>
-    <br/>
-    <br/>
-    <div class="list-group" id="mainTable">
-        <button type="button" class="list-group-item list-group-item-action">Cras justo odio</button>
-        <button type="button" class="list-group-item list-group-item-action">Dapibus ac facilisis in</button>
-        <button type="button" class="list-group-item list-group-item-action">Morbi leo risus</button>
-        <button type="button" class="list-group-item list-group-item-action">Porta ac consectetur ac</button>
-        <button type="button" class="list-group-item list-group-item-action">Vestibulum at eros</button>
-      </div>
+<!--
+  <hr/>
+  Name: <input id="insertNameBox" type="text" size="20"/>
+  Job: <input id="insertJobBox" type="text" size="20"/>
+  Pet: <input id="insertPetBox" type="text" size="20"/>
+  <button id="insertButton">Insert into database</button>
+-->
 
-    Name: <input id="nameBox" type="text" size="20"/>
-    <button id="readButton">Get profile</button>
-    <button id="allUsersButton">Get all usernames</button>
-    <button id="test">test</button>
-
-    <div id="jobDiv"></div>
-    <img id="petImage"></img>
-
-    <hr/>
-    <div id="status"></div>
-
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-  </body>
+  <hr/>
+  <div id="status"></div>
+</body>
 </html>
