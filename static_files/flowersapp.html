@@ -10,28 +10,6 @@
   // jQuery convention for running when the document has been fully loaded:
   $(document).ready(() => {
 
-    /*
-    var flowersDB = {
-      'flower1' : {'genus':'genus1', 'species':'species1'},
-      'flower2' : {'genus':'genus2', 'species':'species2'},
-      'flower3' : {'genus':'genus3', 'species':'species3'},
-      'flower4' : {'genus':'genus4', 'species':'species4'},
-      'flower5' : {'genus':'genus5', 'species':'species5'},
-    };
-     */
-
-    var sightsDB = {
-      'flower1' : [{'person':'person1', 'location':'location1','date':'2019-01-01'},
-                   {'person':'person2', 'location':'location1','date':'2019-01-01'},
-                   {'person':'person2', 'location':'location1','date':'2019-01-01'}],
-      'flower2' : [{'person':'person1', 'location':'location1','date':'2019-01-01'},
-                   {'person':'person2', 'location':'location1','date':'2019-01-01'},
-                   {'person':'person2', 'location':'location1','date':'2019-01-01'}],
-      'flower3' : [{'person':'person1', 'location':'location1','date':'2019-01-01'},
-                   {'person':'person2', 'location':'location1','date':'2019-01-01'},
-                   {'person':'person2', 'location':'location1','date':'2019-01-01'}],
-    }
-
     function loadAllFlowers() {
       $.ajax({
         url: 'loadAllFlowers',
@@ -64,7 +42,7 @@
         url: 'topTenFlowers/'+comname,
         type: 'GET',
         success: (data) => {
-          //console.log(data);
+          visualSightMostRecent(data);
         },
       });
     }
@@ -78,10 +56,6 @@
       $('#modifySpecies').val(jsonFlower[0].SPECIES);
 
       //Load Image
-    }
-
-    function visualSelectedFlowers() {
-      window.alert("Executed");
     }
 
     function updateCurrentFlower (comname, genus, species) {
@@ -109,6 +83,40 @@
       });
     }
 
+    function visualSightMostRecent (sights) {
+      $('#mostRecentSights').html('');
+      const jsonSights = JSON.parse(sights);
+      console.log(jsonSights);
+      for(s in jsonSights) {  //mostRecentSights
+        const control = '<a href="#" class="list-group-item list-group-item-action">'+
+                          '<span class="badge badge-primary">Date: </span>'+
+                          '<span>'+jsonSights[s].SIGHTED+'</span><br/>'+
+                          '<span class="badge badge-primary">Location: </span>'+
+                          '<span>'+jsonSights[s].LOCATION+'</span><br/>'+
+                          '<span class="badge badge-primary">Person: </span>'+
+                          '<span>'+jsonSights[s].PERSON+'</span><a/>';
+        $('#mostRecentSights').append(control);
+        /*
+        const control = '<a id="'+jsonDB[f].COMNAME +'">'+ jsonDB[f].COMNAME+'</a>';
+        const controlClass = 'list-group-item list-group-item-action';
+        $('#mainTable').append($(control).addClass(controlClass).click((e)=>selectFlower(e)));
+        */
+      }
+
+      /*
+            <a href="#" class="list-group-item list-group-item-action">
+            <span class="badge badge-primary">Date:     </span>
+            <span>2019-01-01</span>
+            <br/>
+            <span class="badge badge-primary">Location: </span>
+            <span>Cuba</span>
+            <br/>
+            <span class="badge badge-primary">Person:    </span>
+            <span>Pepe</span>
+          </a>
+       */
+    }
+
     function insertSight (name, person, location, sighted) {
       const url = 'insert/'+name+'/'+person+'/'+location+'/'+sighted;
       $.ajax({
@@ -118,6 +126,14 @@
           window.alert("Sight Inserted!")
         },
       });
+    }
+
+    function insertSight (name, person, location, sighted) {
+
+    }
+
+    function deleteSight (name, person, location, sighted) {
+
     }
 
     $('#btnModifyFlower').click(()=>{
@@ -255,17 +271,7 @@
 
       <div class="col-sm">  <!-- TABLE -->
         <h6 style="text-align: center"> Most Recent </h6>
-        <div class="list-group main-list overflow-auto" style="width:90%; margin-left: 10px; max-height: 540px">
-          <a href="#" class="list-group-item list-group-item-action">
-            <span class="badge badge-primary">Date:     </span>
-            <span>2019-01-01</span>
-            <br/>
-            <span class="badge badge-primary">Location: </span>
-            <span>Cuba</span>
-            <br/>
-            <span class="badge badge-primary">Person:    </span>
-            <span>Pepe</span>
-          </a>
+        <div id="mostRecentSights" class="list-group main-list overflow-auto" style="width:90%; margin-left: 10px; max-height: 540px">
         </div>
       </div>
       <div class="col-sm">   <!-- SELECTED -->
