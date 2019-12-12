@@ -21,6 +21,19 @@ app.get('/loadAllFlowers', (req, res) => {
   });
 });
 
+//GET FLOWER
+app.get('/loadFlower/:comname', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const query = 'SELECT * FROM Flowers' +
+                ' WHERE comname =='+comname;
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
+});
+
 //GET TOP 10 FLOWERS 
 app.get('/topTenFlowers/:comname', (req, res) => {
   const id = '\''+req.params.comname+'\'';
@@ -44,9 +57,10 @@ app.get('/update/:comname/:genus/:species', (req, res) => {
                 ' WHERE COMNAME=='+comname+';';
   console.log(query);
   db.run(query);
+  res.send();
 });
 
-//INSERT FLOWER
+//INSERT SIGHT
 app.get('/insert/:name/:person/:location/:sighted', (req, res) => {
   const name = '\''+req.params.name+'\'';
   const person = '\''+req.params.person+'\'';
@@ -56,6 +70,7 @@ app.get('/insert/:name/:person/:location/:sighted', (req, res) => {
                 ' VALUES('+name+','+person+','+location+','+sighted+');';
   console.log(query);
   db.run(query);
+  res.send();
 });
 
 // start the server at URL: http://localhost:3000/

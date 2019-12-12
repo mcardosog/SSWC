@@ -21,6 +21,57 @@ http://localhost:3000/petsapp.html
 
 // jQuery convention for running when the document has been fully loaded:
 $(document).ready(() => {
+
+  function loadAllFlowers() {
+    $.ajax({
+      url: 'loadAllFlowers',
+      type: 'GET',
+      success: (data) => {
+        console.log(data);
+      },
+    });
+  }
+
+  function selectFlower(comname) {
+    $.ajax({
+      url: 'loadFlower/'+comname,
+      type: 'GET',
+      success: (data) => {
+        console.log(data);
+      },
+    });
+    $.ajax({
+      url: 'topTenFlowers/'+comname,
+      type: 'GET',
+      success: (data) => {
+        console.log(data);
+      },
+    });
+  }
+
+  function updateCurrentFlower (comname, genus, species) {
+    const url = 'update/'+comname+'/'+genus+'/'+species;
+    $.ajax({
+      url: url,
+      type: 'GET',
+      success: () => {
+        window.alert("Flower Updated!")
+      },
+    });
+  }
+
+  function insertSight (name, person, location, sighted) {
+    const url = 'insert/'+name+'/'+person+'/'+location+'/'+sighted;
+    $.ajax({
+      url: url,
+      type: 'GET',
+      success: () => {
+        window.alert("Sight Inserted!")
+      },
+    });
+  }
+
+
   $('#readButton').click(() => {
     const requestURL = 'users/' + $('#nameBox').val();
     console.log('making ajax request to:', requestURL);
@@ -51,13 +102,8 @@ $(document).ready(() => {
   });
 
   $('#allUsersButton').click(() => {
-    $.ajax({
-      url: 'insert/Mata/Pepe/Cuba/2019-02-02',
-      type: 'GET',
-      success: () => {
-        window.alert("Done!")
-      },
-    });
+    selectFlower('Alpine lewisia');
+    //loadAllFlowers();
   });
 
   // define a generic Ajax error handler:
