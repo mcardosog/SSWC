@@ -1,139 +1,356 @@
-<!--
-
-Web frontend for petsapp
-
-COGS121 by Philip Guo
-https://github.com/pgbovine/COGS121
-
-Start ../server.js and then visit this URL to view this webpage:
-
-http://localhost:3000/petsapp.html
-
--->
-
 <html>
 <head>
-<title>PetsApp</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="flowersapp.css" >
+  <title>Flowers App</title>
 
-<script src="jquery-3.3.1.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type="text/javascript">
 
-<script type="text/javascript">
+  // jQuery convention for running when the document has been fully loaded:
+  $(document).ready(() => {
 
-// jQuery convention for running when the document has been fully loaded:
-$(document).ready(() => {
+    var currentSight = {'Date':'', 'Location':'', 'Person':''};
 
-  function loadAllFlowers() {
-    $.ajax({
-      url: 'loadAllFlowers',
-      type: 'GET',
-      success: (data) => {
-        console.log(data);
-      },
+    $(document).ready(function () {
+      loadAllFlowers();
     });
-  }
 
-  function selectFlower(comname) {
-    $.ajax({
-      url: 'loadFlower/'+comname,
-      type: 'GET',
-      success: (data) => {
-        console.log(data);
-      },
-    });
-    $.ajax({
-      url: 'topTenFlowers/'+comname,
-      type: 'GET',
-      success: (data) => {
-        console.log(data);
-      },
-    });
-  }
+    function loadAllFlowers() {
+      $.ajax({
+        url: 'loadAllFlowers',
+        type: 'GET',
+        success: (data) => {
+          visualLoadFlowers(data);
+        },
+      });
+    }
 
-  function updateCurrentFlower (comname, genus, species) {
-    const url = 'update/'+comname+'/'+genus+'/'+species;
-    $.ajax({
-      url: url,
-      type: 'GET',
-      success: () => {
-        window.alert("Flower Updated!")
-      },
-    });
-  }
+    function visualLoadFlowers(flowersDB) {
+      const jsonDB = JSON.parse(flowersDB);
+      for(f in jsonDB) {
+        const control = '<a id="'+jsonDB[f].COMNAME +'">'+ jsonDB[f].COMNAME+'</a>';
+        const controlClass = 'list-group-item list-group-item-action';
+        $('#mainTable').append($(control).addClass(controlClass).click((e)=>selectFlower(e)));
+      }
+    }
 
-  function insertSight (name, person, location, sighted) {
-    const url = 'insert/'+name+'/'+person+'/'+location+'/'+sighted;
-    $.ajax({
-      url: url,
-      type: 'GET',
-      success: () => {
-        window.alert("Sight Inserted!")
-      },
-    });
-  }
+    function selectFlower(e) {
+      const comname = e.target.id;
+      $.ajax({
+        url: 'loadFlower/'+comname,
+        type: 'GET',
+        success: (data) => {
+          cardSelectFlower(data);
+        },
+      });
+      $.ajax({
+        url: 'topTenFlowers/'+comname,
+        type: 'GET',
+        success: (data) => {
+          visualSightMostRecent(data);
+        },
+      });
+    }
 
+    function cardSelectFlower(flower) {
+      const jsonFlower = JSON.parse(flower);
+      document.getElementById("selectedCardName").innerHTML = jsonFlower[0].COMNAME;
+      document.getElementById("selectedCardSmall").innerHTML = jsonFlower[0].GENUS + ' '+jsonFlower[0].SPECIES;
 
-  $('#readButton').click(() => {
-    const requestURL = 'users/' + $('#nameBox').val();
-    console.log('making ajax request to:', requestURL);
+      $('#modifyGenus').val(jsonFlower[0].GENUS);
+      $('#modifySpecies').val(jsonFlower[0].SPECIES);
 
-    // From: http://learn.jquery.com/ajax/jquery-ajax-methods/
-    // Using the core $.ajax() method since it's the most flexible.
-    // ($.get() and $.getJSON() are nicer convenience functions)
-    $.ajax({
-      // all URLs are relative to http://localhost:3000/
-      url: requestURL,
-      type: 'GET',
-      dataType : 'json', // this URL returns data in JSON format
-      success: (data) => {
-        console.log('You received some data!', data);
+      //Load Image
+    }
 
-        if (data.job && data.pet) {
-          $('#status').html('Successfully fetched data at URL: ' + requestURL);
-          $('#jobDiv').html('My job is ' + data.job);
-          $('#petImage').attr('src', data.pet).attr('width', '300px');
-        } else {
-          $('#status').html('Error: could not find user at URL: ' + requestURL);
-          // clear the display
-          $('#jobDiv').html('');
-          $('#petImage').attr('src', '').attr('width', '0px');
+    function updateCurrentFlower (comname, genus, species) {
+      const url = 'update/'+comname+'/'+genus+'/'+species;
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: () => {
+          window.alert("Flower Updated!")
+        },
+      });
+    }
+
+    function insertNewFlower(comname, genus, species) {
+      const url = 'insert/'+comname+'/'+genus+'/'+species;
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: () => {
+          window.alert("Flower Inserted!")
+          $('#newComname').val('');
+          $('#newGenus').val('');
+          $('#newSpecies').val('');
+        },
+      });
+    }
+
+    function visualSightMostRecent (sights) {
+      $('#mostRecentSights').html('');
+      const jsonSights = JSON.parse(sights);
+      console.log(jsonSights);
+      for(s in jsonSights) {  //mostRecentSights
+        const control = '<a class="list-group-item list-group-item-action">'+
+                          '<span class="badge badge-primary">Date: </span>'+
+                          '<span>'+jsonSights[s].SIGHTED+'</span><br/>'+
+                          '<span class="badge badge-primary">Location: </span>'+
+                          '<span>'+jsonSights[s].LOCATION+'</span><br/>'+
+                          '<span class="badge badge-primary">Person: </span>'+
+                          '<span>'+jsonSights[s].PERSON+'</span><a/>';
+        $('#mostRecentSights').append($(control).click((e)=>selectedSight(e)));
+        //$('#mainTable').append($(control).addClass(controlClass).click((e)=>selectFlower(e)));
+      }
+    }
+
+    function selectedSight(e) {
+      var selectedSight = e.target.innerText;
+      selectedSight = selectedSight.replace("Date: ", "");
+      selectedSight = selectedSight.replace("Location: ", "|");
+      selectedSight = selectedSight.replace("Person: ", "|");
+      var splittedSight = selectedSight.split('|');
+      //str.substring(0, str.length - 1);
+      splittedSight[0] = splittedSight[0].substring(0, splittedSight[0].length -1);
+      splittedSight[1] = splittedSight[1].substring(0, splittedSight[1].length -1);
+      $('#selectedSightDate').val(splittedSight[0]);
+      currentSight.Date = splittedSight[0];
+      $('#selectedSightLocation').val(splittedSight[1]);
+      currentSight.Location = splittedSight[1];
+      $('#selectedSightPerson').val(splittedSight[2]);
+      currentSight.Person = splittedSight[2];
+    }
+
+    function insertSight (name, person, location, sighted) {
+      const url = 'insertSight/'+name+'/'+person+'/'+location+'/'+sighted;
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: () => {
+          window.alert("Sight Inserted!")
+        },
+        fail: () => {
+          window.alert("Error: Unable to insert the Insight!")
         }
-      },
+      });
+    }
+
+    function updateSight (name, person, location, sighted) {
+      const url = 'updateSight/'+name+'/'+person+'/'+location+'/'+sighted+'/'+
+                    currentSight.Person+'/'+currentSight.Location+'/'+currentSight.Date;
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: () => {
+          window.alert("Sight Updated!")
+        },
+        fail: () => {
+          window.alert("Error: Unable to insert the Insight!")
+        }
+      });
+    }
+
+    function deleteSight (name, person, location, sighted) {
+      const url = 'deleteSight/'+name+'/'+person+'/'+location+'/'+sighted;
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: () => {
+          window.alert("Sight Deleted!")
+        },
+        fail: () => {
+          window.alert("Error: Unable to insert the Insight!")
+        }
+      });
+    }
+
+    function reloadMostSights() {
+      $('#selectedSightDate').val('');
+      $('#selectedSightLocation').val('');
+      $('#selectedSightPerson').val('')
+      const comname = $('#selectedCardName').html();
+      $.ajax({
+        url: 'topTenFlowers/'+comname,
+        type: 'GET',
+        success: (data) => {
+          visualSightMostRecent(data);
+        },
+      });
+    }
+
+    $('#btnInsertSight').click(()=>{
+      const date = $('#selectedSightDate').val();
+      const location = $('#selectedSightLocation').val();
+      const person = $('#selectedSightPerson').val();
+      const name = $('#selectedCardName').html();
+      insertSight(name,person,location,date);
+      reloadMostSights();
+    });
+
+    $('#btnUpdateSight').click(()=>{
+      const date = $('#selectedSightDate').val();
+      const location = $('#selectedSightLocation').val();
+      const person = $('#selectedSightPerson').val();
+      const name = $('#selectedCardName').html();
+      updateSight(name,person,location,date);
+      reloadMostSights();
+    });
+
+    $('#btnDeleteSight').click(()=>{
+      const date = $('#selectedSightDate').val();
+      const location = $('#selectedSightLocation').val();
+      const person = $('#selectedSightPerson').val();
+      const name = $('#selectedCardName').html();
+      deleteSight(name,person,location,date);
+      reloadMostSights();
+    });
+
+    $('#btnModifyFlower').click(()=>{
+      const comname = $('#selectedCardName').html();
+      const genus = $('#modifyGenus').val();
+      const species = $('#modifySpecies').val();
+      updateCurrentFlower(comname,genus,species);
+    });
+
+    $('#btnInsertFlower').click(()=>{
+      const comname = $('#newComname').val();
+      const genus = $('#newGenus').val();
+      const species = $('#newSpecies').val();
+      insertNewFlower(comname,genus,species);
+      loadAllFlowers();
+    });
+
+    $('#allUsersButton').click(() => {
+      //selectFlower('Alpine lewisia');
+      loadAllFlowers();
+      //visualLoadFlowers();
     });
   });
-
-  $('#allUsersButton').click(() => {
-    selectFlower('Alpine lewisia');
-    //loadAllFlowers();
-  });
-
-  // define a generic Ajax error handler:
-  // http://api.jquery.com/ajaxerror/
-  $(document).ajaxError(() => {
-    $('#status').html('Error: unknown ajaxError!');
-  });
-});
-</script>
+  </script>
 
 </head>
 <body>
-  <h1>Welcome to PetsApp!</h1>
+  <div class="header">
+    <h1 class="welcomeHeader">Welcome to Flowers App!</h1>
+  </div>
+  <br/>
+  <br/>
 
-  Name: <input id="nameBox" type="text" size="20"/>
-  <button id="readButton">Get profile</button>
-  <button id="allUsersButton">Get all usernames</button>
+  <div style="margin: auto">
+    <div class="row">
 
-  <div id="jobDiv"></div>
-  <img id="petImage"></img>
+      <div class="col-sm">  <!-- TABLE -->
+        <div class="list-group main-list overflow-auto" id="mainTable" style="width:90%; margin-left: 10px; max-height: 540px">
+        </div>
+      </div>
 
-<!--
+      <div class="col-sm">   <!-- SELECTED -->
+        <div class="card" style="width: 90%;">
+          <img src="..." class="card-img-top" alt="...">
+          <div class="card-body" style="text-align: center">
+            <h5 class="card-title" id="selectedCardName">Selected Flower</h5>
+            <p>
+              <small id="selectedCardSmall">
+                Genus - Species
+              </small>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm">   <!-- MODIFY -->
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Modify</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">New</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active card" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+            <form style="margin: 10px">
+              <div class="form-group">
+                <label >Genus</label>
+                <input class="form-control" id="modifyGenus" aria-describedby="emailHelp">
+              </div>
+              <div class="form-group">
+                <label >Species</label>
+                <input class="form-control" id="modifySpecies">
+              </div>
+              <button type="submit" class="btn btn-primary" id="btnModifyFlower">Modify</button>
+            </form>
+          </div>
+          <div class="tab-pane fade card"  id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+              <form style="margin: 10px">
+                <div class="form-group">
+                  <label >Comname</label>
+                  <input class="form-control" id="newComname" aria-describedby="emailHelp">
+                </div>
+                <div class="form-group">
+                  <label >Genus</label>
+                  <input class="form-control" id="newGenus" aria-describedby="emailHelp">
+                </div>
+                <div class="form-group">
+                  <label >Species</label>
+                  <input class="form-control" id="newSpecies">
+                </div>
+                <button type="submit" class="btn btn-primary" id="btnInsertFlower">Insert</button>
+              </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <br/>
   <hr/>
-  Name: <input id="insertNameBox" type="text" size="20"/>
-  Job: <input id="insertJobBox" type="text" size="20"/>
-  Pet: <input id="insertPetBox" type="text" size="20"/>
-  <button id="insertButton">Insert into database</button>
--->
+  <br/>
 
-  <hr/>
-  <div id="status"></div>
+  <div style="margin: auto">
+    <h4 style="text-align: center"> SIGHTS </h4>
+    <br/>
+    <div class="row">
+      <div class="col-sm">  <!-- TABLE -->
+        <h6 style="text-align: center"> Most Recent </h6>
+        <div id="mostRecentSights" class="list-group main-list overflow-auto" style="width:90%; margin-left: 10px; max-height: 540px">
+        </div>
+      </div>
+
+      <div class="col-sm">   <!-- SELECTED -->
+        <div class="col-sm">
+          <label >Date</label>
+          <input id="selectedSightDate" class="form-control" aria-describedby="emailHelp">
+          <br/>
+          <label >Location</label>
+          <input id="selectedSightLocation" class="form-control" aria-describedby="emailHelp">
+          <br/>
+          <label >Person</label>
+          <input id="selectedSightPerson" class="form-control" aria-describedby="emailHelp">
+          <br/>
+        </div>
+        <div class="row" style="width: 350px; margin: auto">
+          <div class="col-sm">
+            <button type="submit" class="btn btn-primary" id="btnInsertSight">Insert</button>
+          </div>
+          <div class="col-sm">
+            <button type="submit" class="btn btn-warning" id="btnUpdateSight">Update</button>
+          </div>
+          <div class="col-sm">
+            <button type="submit" class="btn btn-danger" id="btnDeleteSight">Delete</button>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <br/>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"/>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 </body>
 </html>

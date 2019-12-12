@@ -55,19 +55,60 @@ app.get('/update/:comname/:genus/:species', (req, res) => {
   const species = '\''+req.params.species+'\'';
   const query = 'UPDATE FLOWERS SET GENUS='+genus+", SPECIES="+species+
                 ' WHERE COMNAME=='+comname+';';
-  console.log(query);
+  db.run(query);
+  res.send();
+});
+
+//INSERT FLOWER
+app.get('/insert/:comname/:genus/:species', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const genus = '\''+req.params.genus+'\'';
+  const species = '\''+req.params.species+'\'';
+  const query = 'INSERT INTO FLOWERS (COMNAME, GENUS, SPECIES)'+
+      ' VALUES('+comname+','+genus+','+species+');';
+
   db.run(query);
   res.send();
 });
 
 //INSERT SIGHT
-app.get('/insert/:name/:person/:location/:sighted', (req, res) => {
+app.get('/insertSight/:name/:person/:location/:sighted', (req, res) => {
   const name = '\''+req.params.name+'\'';
   const person = '\''+req.params.person+'\'';
   const location = '\''+req.params.location+'\'';
   const sighted = '\''+req.params.sighted+'\'';
   const query = 'INSERT INTO SIGHTINGS (NAME, PERSON, LOCATION, SIGHTED)'+ 
                 ' VALUES('+name+','+person+','+location+','+sighted+');';
+  console.log(query);
+  db.run(query);
+  res.send();
+});
+
+//UPDATE SIGHT
+app.get('/updateSight/:name/:person/:location/:sighted/:_person/:_location/:_sighted', (req, res) => {
+  const name = '\''+req.params.name+'\'';
+  const person = '\''+req.params.person+'\'';
+  const location = '\''+req.params.location+'\'';
+  const sighted = '\''+req.params.sighted+'\'';
+
+  const _person = '\''+req.params._person+'\'';
+  const _location = '\''+req.params._location+'\'';
+  const _sighted = '\''+req.params._sighted+'\'';
+  const query = 'UPDATE SIGHTINGS SET NAME='+name+' ,PERSON='+person+', LOCATION='+location+' ,SIGHTED='+sighted+
+                ' WHERE NAME=='+name+' AND PERSON=='+_person+' AND LOCATION=='+_location+' AND SIGHTED=='+_sighted+';';
+  console.log(query);
+  db.run(query);
+  res.send();
+});
+
+//DELETE SIGHT
+app.get('/deleteSight/:name/:person/:location/:sighted', (req, res) => {
+  const name = '\''+req.params.name+'\'';
+  const person = '\''+req.params.person+'\'';
+  const location = '\''+req.params.location+'\'';
+  const sighted = '\''+req.params.sighted+'\'';
+
+  const query = 'DELETE FROM SIGHTINGS WHERE NAME=='+name+' AND PERSON=='+person+' AND LOCATION=='+location+' AND SIGHTED=='+sighted+';';
   console.log(query);
   db.run(query);
   res.send();
