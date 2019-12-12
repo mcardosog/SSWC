@@ -1,4 +1,3 @@
-// start with ../petsapp-v1/server.js and work toward building ../petsapp-v2/server.js
 const express = require('express');
 const app = express();
 const sqliteJson = require('sqlite-json');
@@ -11,46 +10,6 @@ let db = new sqlite3.Database('./db/flowers2019.db', (err) => {
 const exporter = sqliteJson(db);
 app.use(express.static('static_files'));
 
-const fakeDatabase = {
-  'Philip': {job: 'professor', pet: 'cat.jpg'},
-  'John': {job: 'student',   pet: 'dog.jpg'},
-  'Carol': {job: 'engineer',  pet: 'bear.jpg'}
-};
-
-
-// GET a list of all usernames
-//
-// To test, open this URL in your browser:
-//   http://localhost:3000/users
-app.get('/users', (req, res) => {
-  const allUsernames = Object.keys(fakeDatabase); // returns a list of object keys
-  console.log('allUsernames is:', allUsernames);
-  res.send(allUsernames);
-});
-
-
-// GET profile data for a user
-//
-// To test, open these URLs in your browser:
-//   http://localhost:3000/users/Philip
-//   http://localhost:3000/users/Carol
-//   http://localhost:3000/users/invalidusername
-app.get('/users/:userid', (req, res) => {
-  const nameToLookup = req.params.userid; // matches ':userid' above
-  const val = fakeDatabase[nameToLookup];
-  console.log(nameToLookup, '->', val); // for debugging
-  if (val) {
-    res.send(val);
-  } else {
-    res.send({}); // failed, so return an empty object instead of undefined
-  }
-});
-
-app.get('/test', (req, res) => {
-  console.log("Hello MotherFucker");
-  res.send(fakeDatabase);
-});
-
 //GET ALL FLOWERS
 app.get('/loadAllFlowers', (req, res) => {
   const query = 'SELECT COMNAME FROM Flowers';
@@ -62,18 +21,39 @@ app.get('/loadAllFlowers', (req, res) => {
   });
 });
 
-
+//GET TOP 10 FLOWERS 
 app.get('/topTenFlowers/:comname', (req, res) => {
   const id = '\''+req.params.comname+'\'';
   const query = 'SELECT sighted, location, person FROM SIGHTINGS '+
                 'WHERE name == '+id+
-                'ORDER BY SIGHTED';
+                'ORDER BY SIGHTED LIMIT 10';
   exporter.json(query,function(err, json){
     if(err) { console.log(err); }
     else {
       res.send(json);
     }
   });
+});
+
+//UPDATE FLOWER
+app.set('/update/:comname/:genus/:species', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const genus = '\''+req.params.genus+'\'';
+  const species = '\''+req.params.species+'\'';
+  const query = 'UPDATE FLOWERS SET GENUS='+genus+", SPECIES="+species+
+                'WHERE COMNAME=='+comname+';';
+  db.run(query);
+});
+
+//INSERT FLOWER
+app.set('/insert/:name/:person/:location/:sighted', (req, res) => {
+  const name = '\''+req.params.name+'\'';
+  const person = '\''+req.params.person+'\'';
+  const location = '\''+req.params.location+'\'';
+  const sighted = '\''+req.params.sighted+'\'';
+  const query = 'INSERT INTO SIGHTINGS (NAME, PERSON, LOCATION, SIGHTED)'+ 
+                'VALUES('+name+','+person+','+location+','+sighted+');';
+  db.run(query);
 });
 
 // start the server at URL: http://localhost:3000/
