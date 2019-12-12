@@ -4,38 +4,81 @@
   <link rel="stylesheet" type="text/css" href="flowersapp.css" >
   <title>Flowers App</title>
 
-  <script src="jquery-3.3.1.min.js"></script>
-
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script type="text/javascript">
 
   // jQuery convention for running when the document has been fully loaded:
   $(document).ready(() => {
+
+    /*
+    var flowersDB = {
+      'flower1' : {'genus':'genus1', 'species':'species1'},
+      'flower2' : {'genus':'genus2', 'species':'species2'},
+      'flower3' : {'genus':'genus3', 'species':'species3'},
+      'flower4' : {'genus':'genus4', 'species':'species4'},
+      'flower5' : {'genus':'genus5', 'species':'species5'},
+    };
+     */
+
+    var sightsDB = {
+      'flower1' : [{'person':'person1', 'location':'location1','date':'2019-01-01'},
+                   {'person':'person2', 'location':'location1','date':'2019-01-01'},
+                   {'person':'person2', 'location':'location1','date':'2019-01-01'}],
+      'flower2' : [{'person':'person1', 'location':'location1','date':'2019-01-01'},
+                   {'person':'person2', 'location':'location1','date':'2019-01-01'},
+                   {'person':'person2', 'location':'location1','date':'2019-01-01'}],
+      'flower3' : [{'person':'person1', 'location':'location1','date':'2019-01-01'},
+                   {'person':'person2', 'location':'location1','date':'2019-01-01'},
+                   {'person':'person2', 'location':'location1','date':'2019-01-01'}],
+    }
 
     function loadAllFlowers() {
       $.ajax({
         url: 'loadAllFlowers',
         type: 'GET',
         success: (data) => {
-          console.log(data);
+          visualLoadFlowers(data);
         },
       });
     }
 
-    function selectFlower(comname) {
+    function visualLoadFlowers(flowersDB) {
+      const jsonDB = JSON.parse(flowersDB);
+      for(f in jsonDB) {
+        const control = '<a id="'+jsonDB[f].COMNAME +'">'+ jsonDB[f].COMNAME+'</a>';
+        const controlClass = 'list-group-item list-group-item-action';
+        $('#mainTable').append($(control).addClass(controlClass).click((e)=>selectFlower(e)));
+      }
+    }
+
+    function selectFlower(e) {
+      const comname = e.target.id;
       $.ajax({
         url: 'loadFlower/'+comname,
         type: 'GET',
         success: (data) => {
-          console.log(data);
+          cardSelectFlower(data);
         },
       });
       $.ajax({
         url: 'topTenFlowers/'+comname,
         type: 'GET',
         success: (data) => {
-          console.log(data);
+          //console.log(data);
         },
       });
+    }
+
+    function cardSelectFlower(flower) {
+      const jsonFlower = JSON.parse(flower);
+      document.getElementById("selectedCardName").innerHTML = jsonFlower[0].COMNAME;
+      document.getElementById("selectedCardSmall").innerHTML = jsonFlower[0].GENUS + ' '+jsonFlower[0].SPECIES;
+      //id="selectedCardSmall"
+      //$('#jobDiv').html('FFFFFFF');
+    }
+
+    function visualSelectedFlowers() {
+      window.alert("Executed");
     }
 
     function updateCurrentFlower (comname, genus, species) {
@@ -88,14 +131,9 @@
     });
 
     $('#allUsersButton').click(() => {
-      selectFlower('Alpine lewisia');
-      //loadAllFlowers();
-    });
-
-    // define a generic Ajax error handler:
-    // http://api.jquery.com/ajaxerror/
-    $(document).ajaxError(() => {
-      $('#status').html('Error: unknown ajaxError!');
+      //selectFlower('Alpine lewisia');
+      loadAllFlowers();
+      //visualLoadFlowers();
     });
   });
   </script>
@@ -112,25 +150,7 @@
     <div class="row">
 
       <div class="col-sm">  <!-- TABLE -->
-        <div class="list-group main-list overflow-auto" style="width:90%; margin-left: 10px; max-height: 540px">
-          <a href="#" class="list-group-item list-group-item-action"> Cras justo odio </a>
-          <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
-          <a href="#" class="list-group-item list-group-item-action">Morbi leo risus</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-          <a href="#" class="list-group-item list-group-item-action">Porta ac consectetur ac</a>
-
-          <a href="#" class="list-group-item list-group-item-action" tabindex="-1" aria-disabled="true">Vestibulum at eros</a>
+        <div class="list-group main-list overflow-auto" id="mainTable" style="width:90%; margin-left: 10px; max-height: 540px">
         </div>
       </div>
 
@@ -138,10 +158,10 @@
         <div class="card" style="width: 90%;">
           <img src="..." class="card-img-top" alt="...">
           <div class="card-body" style="text-align: center">
-            <h5 class="card-title">Card title</h5>
+            <h5 class="card-title" id="selectedCardName">Selected Flower</h5>
             <p>
-              <small>
-                This line of text is meant to be treated as fine print.
+              <small id="selectedCardSmall">
+                Genus - Species
               </small>
             </p>
           </div>
@@ -204,12 +224,13 @@
           </a>
         </div>
       </div>
-
       <div class="col-sm">   <!-- SELECTED -->
         <div class="card" style="width: 90%;">
           <img src="..." class="card-img-top" alt="...">
           <div class="card-body" style="text-align: center">
-            <h5 class="card-title">Card title</h5>
+            <h5 class="card-title">
+              Card title
+            </h5>
             <p>
               <small>
                 This line of text is meant to be treated as fine print.
@@ -218,7 +239,6 @@
           </div>
         </div>
       </div>
-
       </div>
     </div>
   </div>
@@ -231,7 +251,7 @@
   <img id="petImage"></img>
   <hr/>
   <div id="status"></div>
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"/>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 </body>
