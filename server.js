@@ -10,6 +10,8 @@ let db = new sqlite3.Database('./db/flowers2019.db', (err) => {
 const exporter = sqliteJson(db);
 app.use(express.static('static_files'));
 
+const userDB = {'marco':'123', 'gabriel':'321'};
+
 //GET ALL FLOWERS
 app.get('/loadAllFlowers', (req, res) => {
   const query = 'SELECT COMNAME FROM Flowers';
