@@ -1,42 +1,76 @@
-// start with ../petsapp-v1/server.js and work toward building ../petsapp-v2/server.js
 const express = require('express');
 const app = express();
+const sqliteJson = require('sqlite-json');
 
+const sqlite3 = require('sqlite3').verbose();
+let db = new sqlite3.Database('./db/flowers2019.db', (err) => {
+  if(err) { console.log(err.message); }
+  else { console.log('Connected to the database!'); }
+});
+const exporter = sqliteJson(db);
 app.use(express.static('static_files'));
 
-const fakeDatabase = {
-  'Philip': {job: 'professor', pet: 'cat.jpg'},
-  'John': {job: 'student',   pet: 'dog.jpg'},
-  'Carol': {job: 'engineer',  pet: 'bear.jpg'}
-};
-
-
-// GET a list of all usernames
-//
-// To test, open this URL in your browser:
-//   http://localhost:3000/users
-app.get('/users', (req, res) => {
-  const allUsernames = Object.keys(fakeDatabase); // returns a list of object keys
-  console.log('allUsernames is:', allUsernames);
-  res.send(allUsernames);
+//GET ALL FLOWERS
+app.get('/loadAllFlowers', (req, res) => {
+  const query = 'SELECT COMNAME FROM Flowers';
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
 });
 
+//GET FLOWER
+app.get('/loadFlower/:comname', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const query = 'SELECT * FROM Flowers' +
+                ' WHERE comname =='+comname;
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
+});
 
-// GET profile data for a user
-//
-// To test, open these URLs in your browser:
-//   http://localhost:3000/users/Philip
-//   http://localhost:3000/users/Carol
-//   http://localhost:3000/users/invalidusername
-app.get('/users/:userid', (req, res) => {
-  const nameToLookup = req.params.userid; // matches ':userid' above
-  const val = fakeDatabase[nameToLookup];
-  console.log(nameToLookup, '->', val); // for debugging
-  if (val) {
-    res.send(val);
-  } else {
-    res.send({}); // failed, so return an empty object instead of undefined
-  }
+//GET TOP 10 FLOWERS 
+app.get('/topTenFlowers/:comname', (req, res) => {
+  const id = '\''+req.params.comname+'\'';
+  const query = 'SELECT sighted, location, person FROM SIGHTINGS '+
+                'WHERE name == '+id+
+                'ORDER BY SIGHTED LIMIT 10';
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
+});
+
+//UPDATE FLOWER
+app.get('/update/:comname/:genus/:species', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const genus = '\''+req.params.genus+'\'';
+  const species = '\''+req.params.species+'\'';
+  const query = 'UPDATE FLOWERS SET GENUS='+genus+", SPECIES="+species+
+                ' WHERE COMNAME=='+comname+';';
+  console.log(query);
+  db.run(query);
+  res.send();
+});
+
+//INSERT SIGHT
+app.get('/insert/:name/:person/:location/:sighted', (req, res) => {
+  const name = '\''+req.params.name+'\'';
+  const person = '\''+req.params.person+'\'';
+  const location = '\''+req.params.location+'\'';
+  const sighted = '\''+req.params.sighted+'\'';
+  const query = 'INSERT INTO SIGHTINGS (NAME, PERSON, LOCATION, SIGHTED)'+ 
+                ' VALUES('+name+','+person+','+location+','+sighted+');';
+  console.log(query);
+  db.run(query);
+  res.send();
 });
 
 // start the server at URL: http://localhost:3000/

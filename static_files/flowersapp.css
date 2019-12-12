@@ -1,0 +1,13 @@
+div.header {
+    background-color: cornflowerblue;
+    margin: auto;
+    text-align: center;
+    height: 10%;
+  }
+
+h1.welcomeHeader {
+    vertical-align: middle;
+    color: white; 
+    position: relative;
+    top:25%;
+  }

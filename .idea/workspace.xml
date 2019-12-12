@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b06e95ac-8fca-4317-86ee-2717840223fa" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/create_database.js" beforeDir="false" afterPath="$PROJECT_DIR$/create_database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/db/flowers2019.db" beforeDir="false" afterPath="$PROJECT_DIR$/db/flowers2019.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static_files/bear.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static_files/cat.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static_files/dog.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static_files/flowersapp.html" beforeDir="false" afterPath="$PROJECT_DIR$/static_files/flowersapp.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +28,13 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
   </component>
   <component name="ServiceViewManager">
     <option name="viewStates">
@@ -47,6 +59,7 @@
       <option name="presentableId" value="Default" />
       <updated>1576080541682</updated>
       <workItem from="1576080545661" duration="24000" />
+      <workItem from="1576128610425" duration="3476000" />
     </task>
     <servers />
   </component>
