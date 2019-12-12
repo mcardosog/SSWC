@@ -1,26 +1,15 @@
-// Node.js + Express server backend for petsapp
-// v2 - use SQLite (https://www.sqlite.org/index.html) as a database
-//
-// COGS121 by Philip Guo
-// https://github.com/pgbovine/COGS121
-
-// run this once to create the initial database as the pets.db file
-//   node create_database.js
-
-// to clear the database, simply delete the pets.db file:
-//   rm pets.db
-
 const sqlite3 = require('sqlite3').verbose();
 let db = new sqlite3.Database('./db/flowers2019.db', (err) => {
   if(err) { console.log(err.message); }
   else { console.log('Connected to the database!'); }
 });
 
-
+//<-----          Returns list of all Flowers Name
+/*
 db.each("SELECT COMNAME FROM Flowers", (err, row) => {
   console.log(row.COMNAME);
 });
-
+*/
 
 //<-----          Get the most 10 recent sighting of the flower
 /*

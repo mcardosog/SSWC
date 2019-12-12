@@ -1,7 +1,14 @@
 // start with ../petsapp-v1/server.js and work toward building ../petsapp-v2/server.js
 const express = require('express');
 const app = express();
+const sqliteJson = require('sqlite-json');
 
+const sqlite3 = require('sqlite3').verbose();
+let db = new sqlite3.Database('./db/flowers2019.db', (err) => {
+  if(err) { console.log(err.message); }
+  else { console.log('Connected to the database!'); }
+});
+const exporter = sqliteJson(db);
 app.use(express.static('static_files'));
 
 const fakeDatabase = {
@@ -37,6 +44,36 @@ app.get('/users/:userid', (req, res) => {
   } else {
     res.send({}); // failed, so return an empty object instead of undefined
   }
+});
+
+app.get('/test', (req, res) => {
+  console.log("Hello MotherFucker");
+  res.send(fakeDatabase);
+});
+
+//GET ALL FLOWERS
+app.get('/loadAllFlowers', (req, res) => {
+  const query = 'SELECT COMNAME FROM Flowers';
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
+});
+
+
+app.get('/topTenFlowers/:comname', (req, res) => {
+  const id = '\''+req.params.comname+'\'';
+  const query = 'SELECT sighted, location, person FROM SIGHTINGS '+
+                'WHERE name == '+id+
+                'ORDER BY SIGHTED';
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
 });
 
 // start the server at URL: http://localhost:3000/

@@ -21,6 +21,18 @@ http://localhost:3000/petsapp.html
 
 // jQuery convention for running when the document has been fully loaded:
 $(document).ready(() => {
+
+  //Call all elements in the DB when the page is loaded
+  $(document).ready(function(){
+    $.ajax({ 
+      url: "loadAllFlowers",
+      type: 'GET',
+      dataType : 'json',
+      success:(data) => {
+        console.log(data);
+      }});
+  });
+
   $('#readButton').click(() => {
     const requestURL = 'users/' + $('#nameBox').val();
     console.log('making ajax request to:', requestURL);
@@ -62,6 +74,17 @@ $(document).ready(() => {
     });
   });
 
+  $('#test').click(()=>{
+    $.ajax({
+      url:'/topTenFlowers/Lovage',
+      type: 'GET',
+      dataType : 'json',
+      success:(data) => {
+        console.log(data);
+      },
+    });
+  });
+
   // define a generic Ajax error handler:
   // http://api.jquery.com/ajaxerror/
   $(document).ajaxError(() => {
@@ -77,6 +100,7 @@ $(document).ready(() => {
   Name: <input id="nameBox" type="text" size="20"/>
   <button id="readButton">Get profile</button>
   <button id="allUsersButton">Get all usernames</button>
+  <button id="test">test</button>
 
   <div id="jobDiv"></div>
   <img id="petImage"></img>

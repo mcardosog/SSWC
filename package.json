@@ -10,7 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "bootstrap": "^4.4.1",
     "express": "^4.16.3",
+    "sqlite-json": "^1.1.0",
     "sqlite3": "^4.0.0"
   }
 }
