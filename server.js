@@ -55,7 +55,17 @@ app.get('/update/:comname/:genus/:species', (req, res) => {
   const species = '\''+req.params.species+'\'';
   const query = 'UPDATE FLOWERS SET GENUS='+genus+", SPECIES="+species+
                 ' WHERE COMNAME=='+comname+';';
-  console.log(query);
+  db.run(query);
+  res.send();
+});
+
+//INSERT FLOWER
+app.get('/insert/:comname/:genus/:species', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const genus = '\''+req.params.genus+'\'';
+  const species = '\''+req.params.species+'\'';
+  const query = 'INSERT INTO FLOWERS (COMNAME, GENUS, SPECIES)'+
+      ' VALUES('+comname+','+genus+','+species+');';
   db.run(query);
   res.send();
 });

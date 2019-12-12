@@ -101,7 +101,10 @@
         url: url,
         type: 'GET',
         success: () => {
-          window.alert("Flower Updated!")
+          window.alert("Flower Inserted!")
+          $('#newComname').val('');
+          $('#newGenus').val('');
+          $('#newSpecies').val('');
         },
       });
     }
