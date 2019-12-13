@@ -10,6 +10,45 @@ let db = new sqlite3.Database('./db/flowers2019.db', (err) => {
 const exporter = sqliteJson(db);
 app.use(express.static('static_files'));
 
+const userDB = {'marco':'123', 'gabriel':'321'};
+
+//GET FLOWER IMAGE
+app.get('/getImage/:comname', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const query = 'SELECT SOURCE FROM PICTURES WHERE COMMON =='+comname;
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
+});
+
+//ADD USER
+app.get('/addUser/:user/:password', (req, res) => {
+  const user = '\''+req.params.user+'\'';
+  const password = '\''+req.params.password+'\'';
+  const query = 'INSERT INTO USERS (USER, PASSWORD)'+
+      ' VALUES('+user+','+password+');';
+  db.run(query);
+  res.sendStatus(200);
+});
+
+//USERLOGIN
+app.get('/login/:user/:password', (req, res) => {
+  const user = '\''+req.params.user+'\'';
+  const password = '\''+req.params.password+'\'';
+
+  const query = 'SELECT * FROM USERS WHERE USER=='+user+' AND PASSWORD=='+password;
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      if(Object.keys(json).length === 2) { res.send('false'); }
+      else { res.send('true'); }
+    }
+  });
+});
+
 //GET ALL FLOWERS
 app.get('/loadAllFlowers', (req, res) => {
   const query = 'SELECT COMNAME FROM Flowers';

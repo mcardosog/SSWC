@@ -14,6 +14,7 @@
 
     $(document).ready(function () {
       loadAllFlowers();
+      $('#controllers').hide();
     });
 
     function loadAllFlowers() {
@@ -51,6 +52,13 @@
           visualSightMostRecent(data);
         },
       });
+      $.ajax({
+        url: 'getImage/'+comname,
+        type: 'GET',
+        success: (data) => {
+          loadFlowerImage(JSON.parse(data)[0].SOURCE);
+        },
+      });
     }
 
     function cardSelectFlower(flower) {
@@ -62,6 +70,10 @@
       $('#modifySpecies').val(jsonFlower[0].SPECIES);
 
       //Load Image
+    }
+
+    function loadFlowerImage(src) {
+      $('#imageFrame').attr("src", src);
     }
 
     function updateCurrentFlower (comname, genus, species) {
@@ -92,7 +104,6 @@
     function visualSightMostRecent (sights) {
       $('#mostRecentSights').html('');
       const jsonSights = JSON.parse(sights);
-      console.log(jsonSights);
       for(s in jsonSights) {  //mostRecentSights
         const control = '<a class="list-group-item list-group-item-action">'+
                           '<span class="badge badge-primary">Date: </span>'+
@@ -180,6 +191,46 @@
       });
     }
 
+    $('#btnLogin').click(()=>{
+      const email = $('#inputEmail').val();
+      const password = $('#inputPassword').val();
+      const url = '/login/'+email+'/'+password;
+      console.log(url);
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: (data) => {
+          console.log(data);
+            if(data == 'true') {
+              $('#controllers').show();
+            }
+            else {
+              window.alert('User name or password are incorrect!');
+            }
+        },
+        fail: () => {
+          window.alert("Error: Unable to insert the Insight!")
+        }
+      });
+    });
+
+    $('#btnAddUser').click(()=>{
+      const email = $('#inputEmail').val();
+      const password = $('#inputPassword').val();
+      const url = '/addUser/'+email+'/'+password;
+      console.log(url);
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: (data) => {
+          windows.alert('User created!');
+        },
+        fail: () => {
+          window.alert("Error: Unable to insert the Insight!")
+        }
+      });
+    });
+
     $('#btnInsertSight').click(()=>{
       const date = $('#selectedSightDate').val();
       const location = $('#selectedSightLocation').val();
@@ -222,11 +273,6 @@
       loadAllFlowers();
     });
 
-    $('#allUsersButton').click(() => {
-      //selectFlower('Alpine lewisia');
-      loadAllFlowers();
-      //visualLoadFlowers();
-    });
   });
   </script>
 
@@ -236,118 +282,138 @@
     <h1 class="welcomeHeader">Welcome to Flowers App!</h1>
   </div>
   <br/>
-  <br/>
 
-  <div style="margin: auto">
-    <div class="row">
-
-      <div class="col-sm">  <!-- TABLE -->
-        <div class="list-group main-list overflow-auto" id="mainTable" style="width:90%; margin-left: 10px; max-height: 540px">
-        </div>
+  <div style="max-width: 30%; margin: auto;">
+    <form>
+      <div class="form-group">
+        <label>User</label>
+        <input class="form-control" id="inputEmail" aria-describedby="emailHelp">
       </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" class="form-control" id="inputPassword">
+      </div>
+      <div style="max-width: 30%; margin: auto">
+        <button id="btnAddUser" type="submit" class="btn btn-primary " style="width: 120px">Add User</button>
+      </div>
+      <br/>
+      <div style="margin: auto; max-width: 30%">
+        <button id="btnLogin" type="button" class="btn btn-primary " style="width: 120px" >Login</button>
+      </div>
+    </form>
+  </div>
+  <hr/>
 
-      <div class="col-sm">   <!-- SELECTED -->
-        <div class="card" style="width: 90%;">
-          <img src="..." class="card-img-top" alt="...">
-          <div class="card-body" style="text-align: center">
-            <h5 class="card-title" id="selectedCardName">Selected Flower</h5>
-            <p>
-              <small id="selectedCardSmall">
-                Genus - Species
-              </small>
-            </p>
+  <div id="controllers" >
+    <div style="margin: auto">
+      <div class="row">
+
+        <div class="col-sm">  <!-- TABLE -->
+          <div class="list-group main-list overflow-auto" id="mainTable" style="width:90%; margin-left: 10px; max-height: 540px">
           </div>
         </div>
-      </div>
 
-      <div class="col-sm">   <!-- MODIFY -->
-        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Modify</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">New</a>
-          </li>
-        </ul>
-        <div class="tab-content" id="pills-tabContent">
-          <div class="tab-pane fade show active card" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-            <form style="margin: 10px">
-              <div class="form-group">
-                <label >Genus</label>
-                <input class="form-control" id="modifyGenus" aria-describedby="emailHelp">
-              </div>
-              <div class="form-group">
-                <label >Species</label>
-                <input class="form-control" id="modifySpecies">
-              </div>
-              <button type="submit" class="btn btn-primary" id="btnModifyFlower">Modify</button>
-            </form>
+        <div class="col-sm">   <!-- SELECTED -->
+          <div class="card" style="width: 90%; height-max: 271px">
+            <img id="imageFrame" src="..." class="card-img-top" alt="..." style="max-width: 100%; max-height: 271px">
+            <div class="card-body" style="text-align: center">
+              <h5 class="card-title" id="selectedCardName">Selected Flower</h5>
+              <p>
+                <small id="selectedCardSmall">
+                  Genus - Species
+                </small>
+              </p>
+            </div>
           </div>
-          <div class="tab-pane fade card"  id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+        </div>
+
+        <div class="col-sm">   <!-- MODIFY -->
+          <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Modify</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">New</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active card" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
               <form style="margin: 10px">
                 <div class="form-group">
-                  <label >Comname</label>
-                  <input class="form-control" id="newComname" aria-describedby="emailHelp">
-                </div>
-                <div class="form-group">
                   <label >Genus</label>
-                  <input class="form-control" id="newGenus" aria-describedby="emailHelp">
+                  <input class="form-control" id="modifyGenus" aria-describedby="emailHelp">
                 </div>
                 <div class="form-group">
                   <label >Species</label>
-                  <input class="form-control" id="newSpecies">
+                  <input class="form-control" id="modifySpecies">
                 </div>
-                <button type="submit" class="btn btn-primary" id="btnInsertFlower">Insert</button>
+                <button type="submit" class="btn btn-primary" id="btnModifyFlower">Modify</button>
               </form>
+            </div>
+            <div class="tab-pane fade card"  id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                <form style="margin: 10px">
+                  <div class="form-group">
+                    <label >Comname</label>
+                    <input class="form-control" id="newComname" aria-describedby="emailHelp">
+                  </div>
+                  <div class="form-group">
+                    <label >Genus</label>
+                    <input class="form-control" id="newGenus" aria-describedby="emailHelp">
+                  </div>
+                  <div class="form-group">
+                    <label >Species</label>
+                    <input class="form-control" id="newSpecies">
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="btnInsertFlower">Insert</button>
+                </form>
+            </div>
           </div>
         </div>
+
       </div>
-
     </div>
-  </div>
 
-  <br/>
-  <hr/>
-  <br/>
-
-  <div style="margin: auto">
-    <h4 style="text-align: center"> SIGHTS </h4>
     <br/>
-    <div class="row">
-      <div class="col-sm">  <!-- TABLE -->
-        <h6 style="text-align: center"> Most Recent </h6>
-        <div id="mostRecentSights" class="list-group main-list overflow-auto" style="width:90%; margin-left: 10px; max-height: 540px">
-        </div>
-      </div>
+    <hr/>
+    <br/>
 
-      <div class="col-sm">   <!-- SELECTED -->
-        <div class="col-sm">
-          <label >Date</label>
-          <input id="selectedSightDate" class="form-control" aria-describedby="emailHelp">
-          <br/>
-          <label >Location</label>
-          <input id="selectedSightLocation" class="form-control" aria-describedby="emailHelp">
-          <br/>
-          <label >Person</label>
-          <input id="selectedSightPerson" class="form-control" aria-describedby="emailHelp">
-          <br/>
-        </div>
-        <div class="row" style="width: 350px; margin: auto">
-          <div class="col-sm">
-            <button type="submit" class="btn btn-primary" id="btnInsertSight">Insert</button>
-          </div>
-          <div class="col-sm">
-            <button type="submit" class="btn btn-warning" id="btnUpdateSight">Update</button>
-          </div>
-          <div class="col-sm">
-            <button type="submit" class="btn btn-danger" id="btnDeleteSight">Delete</button>
+    <div style="margin: auto">
+      <h4 style="text-align: center"> SIGHTS </h4>
+      <br/>
+      <div class="row">
+        <div class="col-sm">  <!-- TABLE -->
+          <h6 style="text-align: center"> Most Recent </h6>
+          <div id="mostRecentSights" class="list-group main-list overflow-auto" style="width:90%; margin-left: 10px; max-height: 540px">
           </div>
         </div>
+
+        <div class="col-sm">   <!-- SELECTED -->
+          <div class="col-sm">
+            <label >Date</label>
+            <input id="selectedSightDate" class="form-control" aria-describedby="emailHelp">
+            <br/>
+            <label >Location</label>
+            <input id="selectedSightLocation" class="form-control" aria-describedby="emailHelp">
+            <br/>
+            <label >Person</label>
+            <input id="selectedSightPerson" class="form-control" aria-describedby="emailHelp">
+            <br/>
+          </div>
+          <div class="row" style="width: 350px; margin: auto">
+            <div class="col-sm">
+              <button type="submit" class="btn btn-primary" id="btnInsertSight">Insert</button>
+            </div>
+            <div class="col-sm">
+              <button type="submit" class="btn btn-warning" id="btnUpdateSight">Update</button>
+            </div>
+            <div class="col-sm">
+              <button type="submit" class="btn btn-danger" id="btnDeleteSight">Delete</button>
+            </div>
+          </div>
+        </div>
+        </div>
       </div>
-      </div>
-    </div>
   </div>
-
   <br/>
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"/>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
