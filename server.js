@@ -24,6 +24,26 @@ app.get('/getImage/:comname', (req, res) => {
   });
 });
 
+//SET FLOWER IMAGE
+app.get('/insertImage/:comname/:src', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const src = '\''+req.params.src+'\'';
+  const query = 'INSERT INTO PICTURES (COMMON,SOURCE) VALUES ('+comname+','+src+');';
+  console.log(query);
+  db.run(query);
+  res.send();
+});
+
+//UPDATE FLOWER IMAGE
+app.get('/updateImage/:comname/:src', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const src = '\''+req.params.src+'\'';
+  const query = 'UPDATE PICTURES SET SOURCE='+src+' WHERE COMMON == '+comname+';';
+  console.log(query);
+  db.run(query);
+  res.send();
+});
+
 //ADD USER
 app.get('/addUser/:user/:password', (req, res) => {
   const user = '\''+req.params.user+'\'';
