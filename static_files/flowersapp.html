@@ -200,9 +200,30 @@
         url: url,
         type: 'GET',
         success: (data) => {
-            if(data == 'OK') {
+          console.log(data);
+            if(data == 'true') {
               $('#controllers').show();
             }
+            else {
+              window.alert('User name or password are incorrect!');
+            }
+        },
+        fail: () => {
+          window.alert("Error: Unable to insert the Insight!")
+        }
+      });
+    });
+
+    $('#btnAddUser').click(()=>{
+      const email = $('#inputEmail').val();
+      const password = $('#inputPassword').val();
+      const url = '/addUser/'+email+'/'+password;
+      console.log(url);
+      $.ajax({
+        url: url,
+        type: 'GET',
+        success: (data) => {
+          windows.alert('User created!');
         },
         fail: () => {
           window.alert("Error: Unable to insert the Insight!")
@@ -262,7 +283,7 @@
   </div>
   <br/>
 
-  <div style="max-width: 20%; margin: auto;">
+  <div style="max-width: 30%; margin: auto;">
     <form>
       <div class="form-group">
         <label>User</label>
@@ -272,8 +293,12 @@
         <label>Password</label>
         <input type="password" class="form-control" id="inputPassword">
       </div>
-      <div style="width: 10%; margin: auto">
-        <button id="btnLogin" type="button" class="btn btn-primary " >Login</button>
+      <div style="max-width: 30%; margin: auto">
+        <button id="btnAddUser" type="submit" class="btn btn-primary " style="width: 120px">Add User</button>
+      </div>
+      <br/>
+      <div style="margin: auto; max-width: 30%">
+        <button id="btnLogin" type="button" class="btn btn-primary " style="width: 120px" >Login</button>
       </div>
     </form>
   </div>
