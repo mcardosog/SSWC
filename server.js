@@ -12,6 +12,29 @@ app.use(express.static('static_files'));
 
 const userDB = {'marco':'123', 'gabriel':'321'};
 
+//USERLOGIN
+app.get('/login/:user/:password', (req, res) => {
+  /*
+  const query = 'SELECT COMNAME FROM Flowers';
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
+  */
+
+  const user = '\''+req.params.user+'\'';
+  const password = '\''+req.params.password+'\'';
+
+  if(user == '\'marco\'' && password == '\'123\'') {
+    res.sendStatus(200);
+  }
+  else {
+    res.sendStatus(404);
+  }
+});
+
 //GET ALL FLOWERS
 app.get('/loadAllFlowers', (req, res) => {
   const query = 'SELECT COMNAME FROM Flowers';
