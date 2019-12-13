@@ -12,6 +12,30 @@ app.use(express.static('static_files'));
 
 const userDB = {'marco':'123', 'gabriel':'321'};
 
+
+
+//GET FLOWER IMAGE
+app.get('/getImage/:comname', (req, res) => {
+  const comname = '\''+req.params.comname+'\'';
+  const query = 'SELECT SOURCE FROM PICTURES WHERE COMMON =='+comname;
+  exporter.json(query,function(err, json){
+    if(err) { console.log(err); }
+    else {
+      res.send(json);
+    }
+  });
+});
+
+//ADD USER
+app.get('/addUser/:user/:password', (req, res) => {
+  const user = '\''+req.params.user+'\'';
+  const password = '\''+req.params.password+'\'';
+  const query = 'INSERT INTO USERS (USER, PASSWORD)'+
+      ' VALUES('+user+','+password+');';
+  db.run(query);
+  res.send();
+});
+
 //USERLOGIN
 app.get('/login/:user/:password', (req, res) => {
   /*
